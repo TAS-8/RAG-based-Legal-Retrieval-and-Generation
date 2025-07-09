@@ -1,0 +1,54 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #faf8f9;
+    color: #5e0505;
+}
+
+h2 {
+    color: #6c0508;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center; /* Center title */
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center; /* Center content in cards */
+}
+
+.card-title {
+    color: #2d3436;
+    font-weight: bold; /* Make card title bold */
+}
+
+.card-text {
+    font-size: 0.95rem;
+    color: #636e72;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #7C2A2A; /* Burgundy */
+    border-color: #7C2A2A;
+    border-radius: 50px; /* Make button rounded */
+    padding: 0.5rem 1.2rem;
+    font-weight: bold; /* Make button font bold */
+    width: 200px; /* Set width to maintain uniformity */
+}
+
+.btn-outline-secondary {
+    border-radius: 50px; /* Make secondary button rounded */
+}
+
+hr {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.text-center {
+    text-align: center; /* Center align text elements */
+}
