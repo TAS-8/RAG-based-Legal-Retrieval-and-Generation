@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LexiFind - Legal Information Retrieval</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../static/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">LexiFind</a>
+    </div>
+  </nav>
+
+  <main class="container" role="main">
+    <h2>⚖️ Legal Information Retrieval</h2>
+    <form method="post" class="mb-4">
+      <div class="mb-3">
+        <label for="query" class="form-label">Enter your query:</label>
+        <input
+          type="text"
+          class="form-control"
+          id="query"
+          name="query"
+          required
+          value="{{ query|default('') }}"
+        />
+      </div>
+  <!--
+      <div class="mb-3">
+        <label for="model" class="form-label">Select model:</label>
+        <select class="form-select" id="model" name="model" required>
+          <option value="legalbert" {% if model == 'legalbert' %}selected{% endif %}>LegalBERT</option>
+        <option value="glove" {% if model == 'glove' %}selected{% endif %}>Glove</option>
+        </select>
+      </div>
+-->
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+   {% if results %}
+    {% for doc in results %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">📄 {{ doc.source }}</h5>
+
+        {% if doc.part or doc.chapter or doc.section %}
+        <p class="card-subtitle mb-2 text-muted">
+          {% if doc.part %}<strong>Part:</strong> {{ doc.part }} {% endif %}
+          {% if doc.chapter %} | <strong>Chapter:</strong> {{ doc.chapter }} {% endif %}
+          {% if doc.section %} | <strong>Section:</strong> {{ doc.section }} {% endif %}
+        </p>
+        {% endif %}
+
+        <!-- Result Text -->
+        <div class="card-text">
+          <span
+            class="preview-text d-inline-block"
+            style="max-height: 4.5em; overflow: hidden;"
+            data-fulltext="{{ doc.text|safe }}"
+          >
+            {{ doc.text|safe }}
+          </span>
+          <a href="javascript:void(0);" class="read-more-link text-primary" onclick="toggleText(this)">Read More</a>
+        </div>
+
+        <p class="text-muted small mt-2">🔍 Similarity Score: {{ doc.distance }}</p>
+      </div>
+    </div>
+    {% endfor %}
+   {% endif %}
+    <a href="/chatbot" class="btn btn-outline-secondary mt-3">Go to Legal Chatbot 🤖</a>
+  </main>
+
+  <!-- External Bootstrap bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Your custom JavaScript -->
+  <script>
+    function toggleText(link) {
+      const textElement = link.previousElementSibling;
+      const isExpanded = link.getAttribute('data-expanded') === 'true';
+
+      if (isExpanded) {
+        textElement.style.maxHeight = '4.5em';
+        textElement.style.overflow = 'hidden';
+        link.textContent = 'Read More';
+        link.setAttribute('data-expanded', 'false');
+      } else {
+        textElement.style.maxHeight = 'none';
+        textElement.style.overflow = 'visible';
+        link.textContent = 'Read Less';
+        link.setAttribute('data-expanded', 'true');
+      }
+    }
+  </script>
+</body>
+</html>

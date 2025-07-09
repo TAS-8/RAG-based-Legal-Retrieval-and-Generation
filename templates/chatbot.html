@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LexiFind Chatbot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Background with floating bubbles */
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      background: linear-gradient(135deg, #6c0508 0%, #a63e3e 60%, #4d0a0a 100%);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    /* Container */
+    .chat-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 0; /* Full screen, no rounded corners */
+      box-shadow: 0 12px 40px rgba(108, 5, 8, 0.5);
+      display: flex;
+      flex-direction: column;
+      padding: 1rem; /* Reduced padding for full screen */
+      z-index: 10;
+    }
+
+    /* Chat box with stylized messages */
+    #chatBox {
+      flex-grow: 1;
+      background: #fff;
+      border-radius: 15px;
+      padding: 1rem;
+      box-shadow: 0 4px 10px rgba(108, 5, 8, 0.25);
+      overflow-y: auto;
+      max-height: 70%; /* Increased height */
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #4a2a2a;
+      width: 100%; /* Full width */
+    }
+
+    /* Messages as chat bubbles */
+    .message {
+      position: relative;
+      display:flex;
+      margin-bottom: 0.8rem;
+      padding: 0.5rem 1rem;
+      border-radius: 15px;
+      line-height: 1.2;
+      font-size: 1rem; /* Increased font size */
+      max-width: 80%;
+      transition: background 0.3s ease;
+    }
+
+    .message.user {
+      background: linear-gradient(145deg, #6c0508, #8a090b);
+      color: #fff;
+      align-self: flex-end; /* Align user messages to the right */
+    }
+
+    .message.bot {
+      background: linear-gradient(145deg, #f7d7d7, #f1b5b5);
+      color: #5d1e1e;
+      align-self: flex-start; /* Align bot messages to the left */
+    }
+
+    /* Input and button styles */
+    #userInput {
+      width: calc(100% - 80px);
+      resize: none;
+      border: 2px solid #6c0508;
+      border-radius: 20px 0 0 20px;
+      padding: 0.5rem;
+      font-size: 1rem; /* Increased font size */
+      color: #6c0508;
+      background: #fff;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6c0508, #8a090b);
+      border: none;
+      font-weight: 700;
+      font-size: 1rem; /* Increased font size */
+      padding: 0.5rem 1rem;
+      border-radius: 0 20px 20px 0;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+      max-width: 80px;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+      background: linear-gradient(135deg, #a12525, #b83434);
+      outline: none;
+      transform: scale(1.05);
+    }
+
+    /* Back to Search button */
+    .btn-back {
+      background: #6c0508;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem; /* Increased font size */
+      padding: 0.5rem 1.5rem;
+      border-radius: 20px;
+      margin-top: 1rem;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-back:hover,
+    .btn-back:focus {
+      background: #a12525;
+      outline: none;
+      transform: scale(1.05);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      #userInput {
+        font-size: 0.9rem; /* Adjusted font size */
+      }
+      .btn-primary {
+        max-width: 100%;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem; /* Adjusted font size */
+      }
+      #chatBox {
+        max-height: 60%; /* Adjusted max-height */
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container-fluid">
+      <h2 class="mb-0">LexiFind Legal Chatbot</h2>
+    </div>
+  </nav>
+
+  <div class="chat-container" role="main" aria-label="LexiFind Legal Chatbot">
+    <div id="chatBox" aria-live="polite" aria-relevant="additions" role="log" tabindex="0"></div>
+    <div class="input-group mb-3">
+      <textarea id="userInput" rows="2" placeholder="Ask your legal question..." aria-label="Ask your legal question"></textarea>
+      <button class="btn btn-primary" onclick="sendMessage()" aria-label="Send message">Ask</button>
+    </div>
+    <button class="btn btn-back" onclick="window.location.href='/'">← Back to Search</button>
+  </div>
+
+  <script>
+    function sendMessage() {
+      const userInputElem = document.getElementById("userInput");
+      const userInput = userInputElem.value.trim();
+      const chatBox = document.getElementById("chatBox");
+      if (!userInput) {
+        alert("Please enter a question.");
+        userInputElem.focus();
+        return;
+      }
+      // Display user message
+      appendMessage(chatBox, userInput, true);
+      userInputElem.value = "";
+      userInputElem.focus();
+      // Fake delay to simulate API call
+      fetch("/chatbot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: userInput })
+      })
+      .then(res => res.json())
+      .then(data => {
+        appendMessage(chatBox, data.response, false);
+      })
+      .catch(() => {
+        appendMessage(chatBox, "Sorry, there was an error processing your request.", false, true);
+      });
+    }
+
+    function appendMessage(container, text, isUser , isError = false) {
+      const message = document.createElement("div");
+      message.classList.add("message");
+      message.classList.add(isUser  ? "user" : "bot"); // Add class based on user or bot
+      if (isError) message.style.color = '#b73232';
+      message.innerHTML = `<strong>${isUser  ? "You" : "Bot"}:</strong> ${escapeHtml(text)}`;
+      container.appendChild(message);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+
+
+    // Basic HTML escape to prevent injection
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      };
+      return text.replace(/[&<>"']/g, (m) => map[m]);
+    }
+  </script>
+</body>
+</html>
+
+ 
